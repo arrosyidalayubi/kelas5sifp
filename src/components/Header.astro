@@ -75,6 +75,46 @@ const navLinks = [
 
 <!-- JavaScript Interaktif (Astro akan membundling script ini secara otomatis) -->
 <script>
+  let clickOutsideClassHandler: ((e: Event) => void) | null = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuIconOpen = document.getElementById('menuIconOpen');
+    const menuIconClose = document.getElementById('menuIconClose');
+
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.onclick = () => {
+        mobileMenu.classList.toggle('hidden');
+        menuIconOpen?.classList.toggle('hidden');
+        menuIconClose?.classList.toggle('hidden');
+      };
+    }
+
+    // --- TAMBAHAN: Logika Klik di Luar Menu ---
+    if (clickOutsideClassHandler) {
+      document.removeEventListener('click', clickOutsideClassHandler);
+    }
+    
+    clickOutsideClassHandler = (event: Event) => {
+      const target = event.target as Node;
+      
+      // Jika menu sedang terbuka (tidak ada class hidden)
+      if (mobileMenu && mobileMenuBtn && !mobileMenu.classList.contains('hidden')) {
+        // Jika klik terjadi di luar area menu dan tombol
+        if (!mobileMenu.contains(target) && !mobileMenuBtn.contains(target)) {
+          
+          // Tutup menu dan kembalikan ikon hamburger
+          mobileMenu.classList.add('hidden');
+          menuIconOpen?.classList.remove('hidden');
+          menuIconClose?.classList.add('hidden');
+        }
+      }
+    };
+
+    document.addEventListener('click', clickOutsideClassHandler);
+
   // Logika Dark Mode
   const themeToggleBtn = document.getElementById('themeToggle');
   
@@ -88,15 +128,5 @@ const navLinks = [
 
   themeToggleBtn?.addEventListener('click', handleToggleClick);
 
-  // Logika Mobile Menu
-  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  const mobileMenu = document.getElementById('mobileMenu');
-  const menuIconOpen = document.getElementById('menuIconOpen');
-  const menuIconClose = document.getElementById('menuIconClose');
-
-  mobileMenuBtn?.addEventListener('click', () => {
-    mobileMenu?.classList.toggle('hidden');
-    menuIconOpen?.classList.toggle('hidden');
-    menuIconClose?.classList.toggle('hidden');
   });
 </script>
