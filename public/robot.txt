@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kelas5sifp.web.id/sitemap-index.xml
