@@ -2,6 +2,7 @@
 // src/pages/jadwal.astro
 import Layout from '../layouts/Layout.astro';
 
+
 // Struktur Data Jadwal (Sangat mudah diedit tanpa menyentuh kode UI di bawah)
 const jadwalKuliah = [
   {
@@ -105,11 +106,7 @@ const jadwalKuliah = [
   }
 ];
 
-// Mendapatkan hari saat ini (0 = Minggu, 1 = Senin, dst)
-// Berguna untuk memberi highlight pada kartu hari ini
-const hariIniIndex = new Date().getDay();
-const namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-const hariIniString = namaHari[hariIniIndex];
+
 ---
 
 <Layout title="Jadwal Kuliah">
@@ -125,44 +122,45 @@ const hariIniString = namaHari[hariIniIndex];
           Jadwal Kuliah
         </h1>
         <p class="text-lg text-slate-600 dark:text-slate-400">
-          Berikut adalah jadwal kuliah untuk Kelas 03SIFP005 Sistem Informasi. Hari ini adalah <strong class="font-semibold text-blue-600 dark:text-blue-400">{hariIniString}</strong>.
+          Berikut adalah jadwal kuliah untuk Kelas 03SIFP005 Sistem Informasi. Hari ini adalah <strong id="teks-hari-ini" class="font-semibold text-blue-600 dark:text-blue-400 capitalize">hari ini</strong>.
         </p>
       </div>
 
       <!-- Grid Hari -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
         
-        {jadwalKuliah.map((jadwal) => {
-          const isHariIni = jadwal.hari === hariIniString;
+        {jadwalKuliah.map((jadwal) => (
           
-          return (
-            <div class={`relative rounded-3xl bg-white dark:bg-slate-800 shadow-sm border transition-all duration-300 ${isHariIni ? 'border-blue-500 ring-1 ring-blue-500 shadow-blue-100 dark:shadow-blue-900/20' : 'border-slate-200 dark:border-slate-700 hover:shadow-lg'}`}>
-              
-              <!-- Badge "Hari Ini" -->
-              {isHariIni && (
-                <div class="absolute -top-3 left-6 px-3 py-1 bg-blue-500 text-white text-xs font-bold rounded-full shadow-sm">
-                  Hari Ini
-                </div>
-              )}
+          <div 
+            class="jadwal-card relative rounded-3xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300"
+            data-hari={jadwal.hari.toLowerCase()}
+          ><!-- Tambahkan atribut data-hari dan biarkan border standar -->
+            
+            <!-- Badge "Hari Ini" (Disembunyikan dengan class 'hidden' by default) -->
+            <div class="badge-hari-ini hidden absolute -top-3 left-6 px-3 py-1 bg-blue-500 text-white text-xs font-bold rounded-full shadow-sm transition-all duration-300">
+              Hari Ini
+            </div>
 
-              <!-- Header Kartu -->
-              <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700/50">
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  {jadwal.hari}
-                </h2>
-              </div>
+            <!-- Header Kartu -->
+            <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700/50">
+              <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {jadwal.hari}
+              </h2>
+            </div>
 
               <!-- Daftar Mata Kuliah -->
               <div class="p-6">
                 {jadwal.mataKuliah.length > 0 ? (
                   <div class="space-y-6">
                     {jadwal.mataKuliah.map((mk) => (
-                      <div class="relative pl-4 border-l-2 border-slate-200 dark:border-slate-700">
-                        <!-- Dot Indikator -->
-                        <div class="absolute -left-1.25 top-1.5 h-2 w-2 rounded-full bg-blue-400"></div>
+                      
+                      <div class="mk-item relative pl-4 border-l-2 border-slate-200 dark:border-slate-700 transition-all duration-500" data-waktu={mk.waktu}>
+                        <!-- TAMBAHAN: Class 'mk-item' dan atribut 'data-waktu' -->
+                        <!-- TAMBAHAN: Class 'mk-dot' untuk mengubah warna titik -->
+                        <div class="mk-dot absolute -left-1.25 top-1.5 h-2 w-2 rounded-full bg-blue-400 transition-colors duration-500"></div>
                         
                         <div class="flex flex-wrap items-start justify-between gap-2 mb-1">
                           <h3 class="font-bold text-slate-900 dark:text-slate-100 leading-tight">
@@ -178,6 +176,7 @@ const hariIniString = namaHari[hariIniIndex];
                             <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             <span class="font-mono text-slate-700 dark:text-slate-300 font-medium">{mk.waktu}</span>
                           </div>
+                          <!-- Sisa info ruang & dosen biarkan sama... -->
                           <div class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                             <span>{mk.ruang}</span>
@@ -204,10 +203,80 @@ const hariIniString = namaHari[hariIniIndex];
               </div>
 
             </div>
-          );
-        })}
+        ))}
 
       </div>
     </div>
   </div>
+  <script>
+  // Bungkus seluruh logika ke dalam sebuah fungsi utama
+  function jalankanJadwal() {
+    const date = new Date();
+    const utcTime = date.getTime() + (date.getTimezoneOffset() * 60000);
+    const jakartaTime = new Date(utcTime + (3600000 * 7));
+    
+    const hariIndex = jakartaTime.getDay();
+    const namaHari = ["minggu", "senin", "selasa", "rabu", "kamis", "jumat", "sabtu"];
+    const hariIniString = namaHari[hariIndex];
+
+    // 1. Ubah Teks Paragraf di Atas
+    const elemenTeksHari = document.getElementById('teks-hari-ini');
+    if (elemenTeksHari) {
+      elemenTeksHari.innerText = hariIniString;
+    }
+
+    // 2. Dapatkan Jam dan Menit (WIB) Saat Ini
+    const currentHour = jakartaTime.getHours();
+    const currentMinute = jakartaTime.getMinutes();
+    const currentTimeDecimal = currentHour + (currentMinute / 60);
+
+    // 3. Proses Kartu Jadwal
+    const cards = document.querySelectorAll('.jadwal-card');
+    
+    cards.forEach((card) => {
+      // Ambil nama hari dari kartu dan ubah ke huruf kecil
+      const hariKartu = card.getAttribute('data-hari')?.toLowerCase();
+
+      if (hariKartu === hariIniString) {
+        // Beri Highlight pada Kartu
+        card.classList.remove('border-slate-200', 'dark:border-slate-700', 'hover:shadow-lg');
+        card.classList.add('border-blue-500', 'ring-1', 'ring-blue-500', 'shadow-blue-100', 'dark:shadow-blue-900/20');
+
+        // Munculkan Badge
+        const badge = card.querySelector('.badge-hari-ini');
+        if (badge) badge.classList.remove('hidden');
+
+        // 4. Proses Jam Mata Kuliah (Redupkan yang sudah terlewat)
+        const mkItems = card.querySelectorAll('.mk-item');
+        mkItems.forEach((item) => {
+          const waktuString = item.getAttribute('data-waktu');
+          
+          if (waktuString) {
+            const [waktuMulai, waktuSelesai] = waktuString.split('-');
+            
+            if (waktuSelesai) {
+              const [jamSelesai, menitSelesai] = waktuSelesai.trim().split(':').map(Number);
+              const endTimeDecimal = jamSelesai + (menitSelesai / 60);
+
+              if (currentTimeDecimal >= endTimeDecimal) {
+                item.classList.add('opacity-40', 'grayscale');
+                const dot = item.querySelector('.mk-dot');
+                if (dot) {
+                  dot.classList.remove('bg-blue-400');
+                  dot.classList.add('bg-slate-300', 'dark:bg-slate-700');
+                }
+              }
+            }
+          }
+        });
+      }
+    });
+  }
+
+  // JALANKAN LANGSUNG: Ini menjamin skrip jalan di Astro mode standar
+  jalankanJadwal();
+
+  // (Opsional) Jalankan juga saat navigasi jika nanti pakai ViewTransitions
+  document.addEventListener('astro:page-load', jalankanJadwal);
+</script>
 </Layout>
