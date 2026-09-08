@@ -1,0 +1,123 @@
+---
+// src/pages/galeri.astro
+import Layout from '../layouts/Layout.astro';
+
+// Struktur Data Galeri
+// Nanti Anda bisa mengganti 'src' dengan path gambar lokal di folder src/assets/
+const galeriData = [
+  {
+    id: 1,
+    src: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    caption: "Kumpul Pagi Kelas bersama Andini, Azzura, Shandi, dan Rayhan.",
+    date: "03 Juli 2026",
+    tag: "Kebersamaan"
+  },
+  {
+    id: 2,
+    src: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    caption: "Diskusi arsitektur dan backend integrasi untuk Capstone Project FitSmart.",
+    date: "Mei 2026",
+    tag: "Proyek"
+  },
+  {
+    id: 3,
+    src: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    caption: "Persiapan jadwal dan silabus untuk Semester 3 Sistem Informasi.",
+    date: "Agustus 2026",
+    tag: "Akademik"
+  },
+  {
+    id: 4,
+    src: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    caption: "Presentasi akhir semester untuk proyek pengembangan web.",
+    date: "Juni 2026",
+    tag: "Presentasi"
+  },
+  {
+    id: 5,
+    src: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    caption: "Momen santai dan diskusi santai di kantin kampus.",
+    date: "Juli 2026",
+    tag: "Santai"
+  },
+  {
+    id: 6,
+    src: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    caption: "Setup environment untuk Astro v7 dan Tailwind v4.",
+    date: "September 2026",
+    tag: "Coding"
+  }
+];
+---
+
+<Layout title="Galeri Kelas">
+  <div class="min-h-screen p-4 sm:p-8 pt-12 pb-24">
+    <div class="max-w-7xl mx-auto">
+      
+      <!-- Header Section -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+          Memori & Dokumentasi
+        </h1>
+        <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          Kumpulan momen kebersamaan, presentasi proyek, dan keseharian mahasiswa Sistem Informasi 03SIFP005.
+        </p>
+      </div>
+
+      <!-- Masonry Grid Tailwind v4 -->
+      <!-- 'columns-1' untuk HP, 'columns-2' tablet, 'columns-3' desktop. 'gap-6' adalah jarak antar kolom -->
+      <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+        
+        {galeriData.map((item) => (
+          
+          <div class="break-inside-avoid relative group rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer border border-slate-200 dark:border-slate-700">
+            <!-- 'break-inside-avoid' memastikan kartu tidak terpotong di tengah-tengah pergantian kolom -->
+            <!-- Gambar -->
+            <div class="overflow-hidden">
+              <img 
+                src={item.src} 
+                alt={item.caption} 
+                class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
+                loading="lazy"
+              />
+            </div>
+
+            <!-- Overlay Gradient (Muncul saat di-hover pada desktop) -->
+            <div class="absolute inset-0 bg-linear-to-t from-slate-900/90 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block"></div>
+
+            <!-- Detail Teks (Desktop Hover State) -->
+            <div class="absolute bottom-0 left-0 right-0 p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hidden md:block">
+              <span class="inline-block px-2.5 py-1 bg-blue-600 text-white text-xs font-bold rounded-md mb-2">
+                {item.tag}
+              </span>
+              <p class="text-white text-sm font-medium leading-snug drop-shadow-md">
+                {item.caption}
+              </p>
+              <p class="text-slate-300 text-xs font-mono mt-2">
+                {item.date}
+              </p>
+            </div>
+
+            <!-- Detail Teks (Mobile Selalu Tampil di Bawah) -->
+            <div class="p-4 bg-white dark:bg-slate-800 md:hidden border-t border-slate-100 dark:border-slate-700">
+              <div class="flex justify-between items-start mb-2">
+                <span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 text-[10px] font-bold rounded">
+                  {item.tag}
+                </span>
+                <span class="text-slate-400 text-[10px] font-mono">
+                  {item.date}
+                </span>
+              </div>
+              <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-snug">
+                {item.caption}
+              </p>
+            </div>
+
+          </div>
+        ))}
+
+      </div>
+
+    </div>
+  </div>
+</Layout>

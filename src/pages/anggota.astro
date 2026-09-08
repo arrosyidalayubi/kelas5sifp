@@ -1,0 +1,173 @@
+---
+// src/pages/anggota.astro
+// PERBAIKAN 1: Import type 'CollectionEntry' dari astro:content
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+
+// PERBAIKAN 2: Mendefinisikan tipe parameter entry sebagai CollectionEntry<'mahasiswa'>
+const allMahasiswa = await getCollection('mahasiswa', (entry: CollectionEntry<'mahasiswa'>) => {
+  return entry.data.isActive === true;
+});
+
+// PERBAIKAN 3: Mendefinisikan tipe parameter (a, b) untuk fungsi sort
+const sortedMahasiswa = allMahasiswa.sort((a: CollectionEntry<'mahasiswa'>, b: CollectionEntry<'mahasiswa'>) => 
+  a.data.name.localeCompare(b.data.name)
+);
+---
+
+<Layout title="Direktori Anggota">
+  <div class="min-h-screen p-4 sm:p-8 pt-12 pb-24">
+    <div class="max-w-7xl mx-auto">
+      
+      <div class="text-center mb-10">
+        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+          Direktori Mahasiswa
+        </h1>
+        <p class="text-lg text-slate-600 dark:text-slate-400">
+          Kenali {sortedMahasiswa.length} talenta dari Kelas 03SIFP005 Sistem Informasi.
+        </p>
+      </div>
+
+      <div class="max-w-2xl mx-auto mb-12 relative">
+        <div class="relative group">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="block w-full pl-12 pr-4 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-all duration-300" 
+            placeholder="Cari nama, NIM, atau role (misal: frontend)..." 
+            autocomplete="off"
+          />
+          
+          <!-- PERBAIKAN 4 (Tailwind): Menghapus 'flex' yang bentrok dengan 'hidden' -->
+          <div class="absolute inset-y-0 right-0 pr-4 hidden sm:flex items-center pointer-events-none">
+            <kbd class="inline-flex items-center border border-slate-200 dark:border-slate-700 rounded px-2 text-xs font-sans font-medium text-slate-400 dark:text-slate-500">⌘ K</kbd>
+          </div>
+        </div>
+      </div>
+
+      <div id="studentGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 transition-all duration-300">
+        <!-- PERBAIKAN 5: Mendefinisikan tipe (mhs) -->
+        {sortedMahasiswa.map((mhs: CollectionEntry<'mahasiswa'>) => (
+          <a 
+            href={`/anggota/${mhs.id}`} 
+            class="student-card block bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-lg hover:-translate-y-2 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 group"
+            data-name={mhs.data.name.toLowerCase()}
+            data-role={mhs.data.role.toLowerCase()}
+          >
+            <div class="flex justify-center mb-5 relative">
+              {mhs.data.avatar ? (
+                <Image 
+                  src={mhs.data.avatar} 
+                  alt={`Foto ${mhs.data.name}`} 
+                  class="w-24 h-24 rounded-full object-cover ring-4 ring-blue-50 dark:ring-slate-700/50 group-hover:ring-blue-100 dark:group-hover:ring-blue-900/30 transition-all"
+                />
+              ) : (
+                <img 
+                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(mhs.data.name)}&background=eff6ff&color=1d4ed8&size=256&bold=true`}
+                  alt={`Avatar Inisial ${mhs.data.name}`}
+                  class="w-24 h-24 rounded-full object-cover ring-4 ring-slate-50 dark:ring-slate-800 group-hover:ring-blue-100 dark:group-hover:ring-blue-900/30 transition-all"
+                  loading="lazy"
+                />
+              )}
+            </div>
+
+            <div class="text-center">
+              <h2 class="text-lg font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                {mhs.data.name}
+              </h2>
+              <span class="inline-block mt-3 px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium rounded-full truncate max-w-full">
+                {mhs.data.role}
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <!-- PERBAIKAN 6 (Tailwind): Memisahkan 'hidden' dan 'flex' dengan tag div (Wrapper) -->
+      <div id="emptyStateWrapper" class="hidden">
+        <div class="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
+          <div class="bg-slate-100 dark:bg-slate-800 rounded-full p-6 mb-4">
+            <svg class="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Pencarian tidak ditemukan</h3>
+          <p class="text-slate-500 dark:text-slate-400">Kami tidak menemukan anggota dengan kata kunci tersebut. Coba gunakan nama atau NIM lain.</p>
+          <button id="resetBtn" class="mt-6 text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+            Reset Pencarian
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // PERBAIKAN 7: Melakukan DOM Type Casting (mengubah HTMLElement | null)
+    const searchInput = document.getElementById('searchInput') as HTMLInputElement | null;
+    
+    // Memberitahu TS bahwa ini kumpulan HTMLElement, agar properti '.style' terbaca
+    const studentCards = document.querySelectorAll('.student-card') as NodeListOf<HTMLElement>;
+    const emptyState = document.getElementById('emptyStateWrapper');
+    const resetBtn = document.getElementById('resetBtn');
+
+    // Menentukan tipe string pada searchTerm
+    const filterCards = (searchTerm: string) => {
+      let visibleCount = 0;
+      const term = searchTerm.toLowerCase().trim();
+
+      studentCards.forEach((card) => {
+        const name = card.getAttribute('data-name') || '';
+        const role = card.getAttribute('data-role') || '';
+
+        // Logika pencarian diperbarui (tanpa nim)
+        if (name.includes(term) || role.includes(term)) {
+          card.style.display = 'block'; 
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // PERBAIKAN 8: Menggunakan Optional Chaining (?.) untuk mencegah error 'possibly null'
+      if (visibleCount === 0) {
+        emptyState?.classList.remove('hidden');
+      } else {
+        emptyState?.classList.add('hidden');
+      }
+    };
+
+    if (searchInput) {
+      // PERBAIKAN 9: Memberikan tipe Event pada parameter event Listener
+      searchInput.addEventListener('input', (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        if (target) {
+          filterCards(target.value);
+        }
+      });
+
+      document.addEventListener('keydown', (e: KeyboardEvent) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+          e.preventDefault();
+          searchInput.focus();
+        }
+      });
+    }
+
+    if (resetBtn && searchInput) {
+      resetBtn.addEventListener('click', () => {
+        searchInput.value = ''; 
+        filterCards('');        
+        searchInput.focus();    
+      });
+    }
+  });
+</script>
